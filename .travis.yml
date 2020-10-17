@@ -1,0 +1,25 @@
+language: android
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-30.0.2
+    - android-30
+
+jdk:
+  - oraclejdk8
+
+branches:
+  only:
+    - master
+
+before_install:
+  - yes | sdkmanager "platforms;android-30"
+  - yes | sdkmanager "build-tools;30.0.2"
+
+script:
+  - ./gradlew clean testDebugUnitTest
+
+notifications:
+  email: false
