@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package me.xizzhu.android.kvs
+package me.xizzhu.android.kvs.lmdb
 
-interface Kvs : AutoCloseable {
-    /**
-     * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
-     */
-    operator fun get(key: ByteArray): ByteArray?
+import me.xizzhu.android.kvs.Kvs
 
-    /**
-     * Associates the specified [value] with the specified [key].
-     */
-    operator fun set(key: ByteArray, value: ByteArray)
+internal class LmdbKvs : Kvs {
+    private val env = Env()
+
+    override fun get(key: ByteArray): ByteArray? {
+        TODO("Not yet implemented")
+    }
+
+    override fun set(key: ByteArray, value: ByteArray) {
+        TODO("Not yet implemented")
+    }
+
+    override fun close() {
+        env.close()
+    }
 }

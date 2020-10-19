@@ -16,14 +16,10 @@
 
 package me.xizzhu.android.kvs
 
-interface Kvs : AutoCloseable {
-    /**
-     * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
-     */
-    operator fun get(key: ByteArray): ByteArray?
+import me.xizzhu.android.kvs.lmdb.LmdbKvs
 
-    /**
-     * Associates the specified [value] with the specified [key].
-     */
-    operator fun set(key: ByteArray, value: ByteArray)
+class KvsBuilder {
+    fun build(): Kvs {
+        return LmdbKvs()
+    }
 }

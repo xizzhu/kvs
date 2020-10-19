@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package me.xizzhu.android.kvs
+package me.xizzhu.android.kvs.lmdb
 
-interface Kvs : AutoCloseable {
-    /**
-     * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
-     */
-    operator fun get(key: ByteArray): ByteArray?
+internal class Env : AutoCloseable {
+    private val nativeEnv = Jni.createEnv()
 
-    /**
-     * Associates the specified [value] with the specified [key].
-     */
-    operator fun set(key: ByteArray, value: ByteArray)
+    override fun close() {
+        Jni.closeEnv(nativeEnv)
+    }
 }

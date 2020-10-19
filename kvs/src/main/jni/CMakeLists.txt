@@ -7,4 +7,5 @@ add_library(
 
         lmdb/libraries/liblmdb/mdb.c
         lmdb/libraries/liblmdb/midl.c
+        jni_lmdb.cpp
 )

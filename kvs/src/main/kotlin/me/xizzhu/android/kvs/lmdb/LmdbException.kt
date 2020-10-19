@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package me.xizzhu.android.kvs
+package me.xizzhu.android.kvs.lmdb
 
-interface Kvs : AutoCloseable {
-    /**
-     * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
-     */
-    operator fun get(key: ByteArray): ByteArray?
+import java.io.IOException
 
-    /**
-     * Associates the specified [value] with the specified [key].
-     */
-    operator fun set(key: ByteArray, value: ByteArray)
+internal class LmdbException(val errorCode: Int, message: String) : IOException(message) {
+    override fun toString(): String {
+        return "LmdbException: Error code: $errorCode, message: $message"
+    }
 }
