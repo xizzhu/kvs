@@ -1,0 +1,3 @@
+[submodule "kvs/src/main/jni/lmdb"]
+	path = kvs/src/main/jni/lmdb
+	url = git@github.com:LMDB/lmdb.git

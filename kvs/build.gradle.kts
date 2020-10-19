@@ -52,6 +52,13 @@ android {
             isTestCoverageEnabled = project.hasProperty("coverage")
         }
     }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/jni/CMakeLists.txt")
+            version = Versions.cmake
+        }
+    }
 }
 
 tasks.withType(Test::class.java) {

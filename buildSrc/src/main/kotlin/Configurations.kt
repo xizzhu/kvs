@@ -43,6 +43,7 @@ object Versions {
         const val target = 30
     }
 
+    val cmake = "3.10.2"
     val java = JavaVersion.VERSION_1_8
 
     object Kotlin {
