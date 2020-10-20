@@ -10,6 +10,7 @@ local.properties
 build
 gen
 out
+.cxx
 
 # Mac
 .DS_Store

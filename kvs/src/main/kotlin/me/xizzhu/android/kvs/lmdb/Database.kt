@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath(Dependencies.Sdk.classpath)
-        classpath(Dependencies.Kotlin.classpath)
-        classpath(Dependencies.AndroidMaven.classpath)
-        classpath(Dependencies.Coveralls.classpath)
-    }
-}
+package me.xizzhu.android.kvs.lmdb
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
+import java.io.Closeable
+
+internal class Database(private val nativeEnv: Long, private val nativeTransaction: Long, createIfNotExists: Boolean) : Closeable {
+    private val nativeDatabase = Jni.openDatabase(nativeTransaction, createIfNotExists)
+
+    override fun close() {
+        Jni.closeDatabase(nativeEnv, nativeDatabase)
+    }
+
+    fun get(key: ByteArray): ByteArray? = Jni.getData(nativeTransaction, nativeDatabase, key)
+
+    fun set(key: ByteArray, value: ByteArray) {
+        Jni.setData(nativeTransaction, nativeDatabase, key, value)
     }
 }

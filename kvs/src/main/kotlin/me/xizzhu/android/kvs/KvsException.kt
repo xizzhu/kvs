@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath(Dependencies.Sdk.classpath)
-        classpath(Dependencies.Kotlin.classpath)
-        classpath(Dependencies.AndroidMaven.classpath)
-        classpath(Dependencies.Coveralls.classpath)
-    }
-}
+package me.xizzhu.android.kvs
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
+import java.io.IOException
+
+class KvsException(val errorCode: Int, message: String) : IOException(message) {
+    constructor(message: String) : this(Int.MIN_VALUE, message)
+
+    override fun toString(): String {
+        return "KvsException -> error code: $errorCode, message: $message"
     }
 }

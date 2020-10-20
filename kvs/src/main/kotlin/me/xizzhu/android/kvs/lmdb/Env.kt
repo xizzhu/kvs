@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath(Dependencies.Sdk.classpath)
-        classpath(Dependencies.Kotlin.classpath)
-        classpath(Dependencies.AndroidMaven.classpath)
-        classpath(Dependencies.Coveralls.classpath)
-    }
-}
+package me.xizzhu.android.kvs.lmdb
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
+import me.xizzhu.android.kvs.KvsConfig
+
+internal class Env(config: KvsConfig) : AutoCloseable {
+    private val nativeEnv = Jni.createEnv()
+
+    init {
+        Jni.openEnv(nativeEnv, config.dir, 0, 0x180 /* 0600 */)
     }
+
+    override fun close() {
+        Jni.closeEnv(nativeEnv)
+    }
+
+    fun newTransaction(readOnly: Boolean): Transaction = Transaction(nativeEnv, readOnly)
 }
