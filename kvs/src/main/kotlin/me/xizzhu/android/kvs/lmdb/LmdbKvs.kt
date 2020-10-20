@@ -24,12 +24,23 @@ internal class LmdbKvs(config: KvsConfig) : Kvs {
     private val env = Env(config)
 
     override fun get(key: ByteArray): ByteArray? {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
+
         return env.newTransaction(readOnly = true).use(commit = false) { transaction ->
             transaction.openDatabase().use { it.get(key) }
         }
     }
 
     override fun set(key: ByteArray, value: ByteArray) {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
+        if (value.isEmpty()) {
+            throw KvsException("Value is empty")
+        }
+
         env.newTransaction(readOnly = false).use { transaction ->
             transaction.openDatabase().use { it.set(key, value) }
         }

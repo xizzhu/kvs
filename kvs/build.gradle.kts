@@ -36,11 +36,13 @@ android {
 
         versionCode = Versions.Kvs.code
         versionName = Versions.Kvs.name
+
+        testInstrumentationRunner = Dependencies.AndroidX.Test.runner
     }
 
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin")
-        getByName("test").java.srcDirs("src/test/kotlin")
+        getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
     }
 
     buildTypes {
@@ -68,5 +70,7 @@ tasks.withType(Test::class.java) {
 dependencies {
     api(Dependencies.AndroidX.annotation)
 
-    testImplementation(Dependencies.Kotlin.test)
+    androidTestImplementation(Dependencies.Kotlin.test)
+    androidTestImplementation(Dependencies.AndroidX.Test.junit)
+    androidTestImplementation(Dependencies.AndroidX.Test.rules)
 }

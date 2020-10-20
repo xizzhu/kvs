@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 import org.gradle.api.JavaVersion
 
 object Configurations {
-    val sampleAppId = "me.xizzhu.android.kvs.sample"
+    const val sampleAppId = "me.xizzhu.android.kvs.sample"
 }
 
 object Versions {
@@ -43,7 +43,7 @@ object Versions {
         const val target = 30
     }
 
-    val cmake = "3.10.2"
+    const val cmake = "3.10.2"
     val java = JavaVersion.VERSION_1_8
 
     object Kotlin {
@@ -52,6 +52,11 @@ object Versions {
 
     object AndroidX {
         const val annotation = "1.1.0"
+
+        object Test {
+            const val junit = "1.1.2"
+            const val rules = "1.3.0"
+        }
     }
 }
 
@@ -71,5 +76,12 @@ object Dependencies {
 
     object AndroidX {
         const val annotation = "androidx.annotation:annotation:${Versions.AndroidX.annotation}"
+
+        object Test {
+            const val junit = "androidx.test.ext:junit:${Versions.AndroidX.Test.junit}"
+            const val rules = "androidx.test:rules:${Versions.AndroidX.Test.rules}"
+
+            const val runner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 }

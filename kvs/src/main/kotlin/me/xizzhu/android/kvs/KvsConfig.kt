@@ -35,6 +35,8 @@ fun newKvs(config: KvsConfig.() -> Unit): Kvs {
     val dir = File(kvsConfig.dir)
     if (!dir.exists()) throw KvsException("Dir '${kvsConfig.dir}' not exist")
     if (!dir.isDirectory) throw KvsException("'${kvsConfig.dir}' is not a directory")
+    if (!dir.canRead()) throw KvsException("Cannot read from '${kvsConfig.dir}'")
+    if (!dir.canWrite()) throw KvsException("Cannot write to '${kvsConfig.dir}'")
 
     return LmdbKvs(kvsConfig)
 }

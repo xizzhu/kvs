@@ -19,17 +19,19 @@ apply(plugin = "jacoco")
 tasks {
     val debugCoverageReport by registering(JacocoReport::class)
     debugCoverageReport {
-        dependsOn("testDebugUnitTest")
+        dependsOn("connectedDebugAndroidTest")
 
         val kotlinClasses = fileTree("$buildDir/tmp/kotlin-classes/debug")
         val coverageSourceDirs = arrayOf("src/main/kotlin")
         val executionDataDirs = fileTree("$buildDir") {
-            setIncludes(listOf("jacoco/testDebugUnitTest.exec"))
+            setIncludes(listOf("outputs/code_coverage/debugAndroidTest/connected/*.ec"))
         }
 
         classDirectories.setFrom(files(kotlinClasses))
         additionalSourceDirs.setFrom(files(coverageSourceDirs))
         sourceDirectories.setFrom(coverageSourceDirs)
         executionData.setFrom(executionDataDirs)
+
+        reports.html.isEnabled = true
     }
 }
