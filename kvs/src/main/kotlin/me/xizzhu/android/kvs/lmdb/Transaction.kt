@@ -29,3 +29,19 @@ internal class Transaction(private val nativeEnv: Long, private val readOnly: Bo
 
     fun openDatabase(): Database = Database(nativeEnv, nativeTransaction, createIfNotExists = !readOnly)
 }
+
+internal inline fun <R> Transaction.use(commit: Boolean = true, block: (Transaction) -> R): R {
+    var exception: Throwable? = null
+    try {
+        return block(this)
+    } catch (e: Throwable) {
+        exception = e
+        throw e
+    } finally {
+        try {
+            if (commit && exception == null) commit() else abort()
+        } catch (e: Throwable) {
+            if (exception == null) throw e
+        }
+    }
+}

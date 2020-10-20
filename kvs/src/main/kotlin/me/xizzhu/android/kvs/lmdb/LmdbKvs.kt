@@ -23,16 +23,15 @@ internal class LmdbKvs(config: KvsConfig) : Kvs {
     private val env = Env(config)
 
     override fun get(key: ByteArray): ByteArray? {
-        val transaction = env.newTransaction(true)
-        val result = transaction.openDatabase().use { it.get(key) }
-        transaction.abort()
-        return result
+        return env.newTransaction(readOnly = true).use(commit = false) { transaction ->
+            transaction.openDatabase().use { it.get(key) }
+        }
     }
 
     override fun set(key: ByteArray, value: ByteArray) {
-        val transaction = env.newTransaction(false)
-        transaction.openDatabase().use { it.set(key, value) }
-        transaction.commit()
+        env.newTransaction(readOnly = false).use { transaction ->
+            transaction.openDatabase().use { it.set(key, value) }
+        }
     }
 
     override fun close() {
