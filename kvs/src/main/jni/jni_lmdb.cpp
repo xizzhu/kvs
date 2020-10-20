@@ -70,11 +70,34 @@ Java_me_xizzhu_android_kvs_lmdb_Jni_closeEnv(JNIEnv *env, jobject thisObj, jlong
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_me_xizzhu_android_kvs_lmdb_Jni_openEnv(JNIEnv *env, jobject thisObj, jlong mdb_env, jstring path, jint flags, int mode) {
+Java_me_xizzhu_android_kvs_lmdb_Jni_openEnv(JNIEnv *env, jobject thisObj, jlong mdb_env, jstring path, jint flags, jint mode) {
     const char *pathPtr = (*env).GetStringUTFChars(path, nullptr);
     int rc = mdb_env_open((MDB_env *) mdb_env, pathPtr, (unsigned int) flags, (mdb_mode_t) mode);
     (*env).ReleaseStringUTFChars(path, pathPtr);
     if (rc != MDB_SUCCESS) {
         throwLmdbException(env, rc);
     }
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_beginTransaction(JNIEnv *env, jobject thisObj, jlong mdb_env, jboolean readOnly) {
+    MDB_txn *mdb_txn;
+    int rc = mdb_txn_begin((MDB_env *) mdb_env, nullptr, readOnly ? MDB_RDONLY : 0, &mdb_txn);
+    if (rc != MDB_SUCCESS) {
+        throwLmdbException(env, rc);
+    }
+    return (jlong) mdb_txn;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_commitTransaction(JNIEnv *env, jobject thisObj, jlong mdb_txn) {
+    int rc = mdb_txn_commit((MDB_txn *) mdb_txn);
+    if (rc != MDB_SUCCESS) {
+        throwLmdbException(env, rc);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_abortTransaction(JNIEnv *env, jobject thisObj, jlong mdb_txn) {
+    mdb_txn_abort((MDB_txn *) mdb_txn);
 }

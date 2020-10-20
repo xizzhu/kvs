@@ -94,4 +94,10 @@ internal object Jni {
     external fun closeEnv(nativeEnv: Long)
 
     external fun openEnv(nativeEnv: Long, path: String, flags: Int, mode: Int)
+
+    external fun beginTransaction(nativeEnv: Long, readOnly: Boolean): Long
+
+    external fun commitTransaction(nativeTransaction: Long)
+
+    external fun abortTransaction(nativeTransaction: Long)
 }

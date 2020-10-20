@@ -16,19 +16,12 @@
 
 package me.xizzhu.android.kvs.lmdb
 
-import me.xizzhu.android.kvs.KvsConfig
-
-internal class Env(config: KvsConfig) : AutoCloseable {
-    private val nativeEnv = Jni.createEnv()
-
-    init {
-        Jni.openEnv(nativeEnv, config.dir, 0, 0x180 /* 0600 */)
+internal class Transaction(private val nativeTransaction: Long) {
+    fun commit() {
+        Jni.commitTransaction(nativeTransaction)
     }
 
-    override fun close() {
-        Jni.closeEnv(nativeEnv)
+    fun abort() {
+        Jni.abortTransaction(nativeTransaction)
     }
-
-    fun newTransaction(readOnly: Boolean): Transaction =
-            Transaction(Jni.beginTransaction(nativeEnv, readOnly))
 }
