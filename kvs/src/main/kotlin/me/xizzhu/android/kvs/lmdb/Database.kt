@@ -16,10 +16,18 @@
 
 package me.xizzhu.android.kvs.lmdb
 
-internal class Database(private val nativeEnv: Long, nativeTransaction: Long, createIfNotExists: Boolean) : AutoCloseable {
+import java.io.Closeable
+
+internal class Database(private val nativeEnv: Long, private val nativeTransaction: Long, createIfNotExists: Boolean) : Closeable {
     private val nativeDatabase = Jni.openDatabase(nativeTransaction, createIfNotExists)
 
     override fun close() {
         Jni.closeDatabase(nativeEnv, nativeDatabase)
+    }
+
+    fun get(key: ByteArray): ByteArray? = Jni.getData(nativeTransaction, nativeDatabase, key)
+
+    fun set(key: ByteArray, value: ByteArray) {
+        Jni.setData(nativeTransaction, nativeDatabase, key, value)
     }
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <cstdlib>
 #include <jni.h>
 #include "lmdb/libraries/liblmdb/lmdb.h"
 
@@ -115,4 +116,42 @@ Java_me_xizzhu_android_kvs_lmdb_Jni_openDatabase(JNIEnv *env, jobject thisObj, j
 extern "C" JNIEXPORT void JNICALL
 Java_me_xizzhu_android_kvs_lmdb_Jni_closeDatabase(JNIEnv *env, jobject thisObj, jlong mdb_env, jlong mdb_dbi) {
     mdb_dbi_close((MDB_env *) mdb_env, (MDB_dbi) mdb_dbi);
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_getData(JNIEnv *env, jobject thisObj, jlong mdb_txn, jlong mdb_dbi, jbyteArray key) {
+    MDB_val mdb_key, mdb_value;
+    mdb_key.mv_size = (*env).GetArrayLength(key);
+    mdb_key.mv_data = malloc(mdb_key.mv_size);
+    (*env).GetByteArrayRegion(key, 0, mdb_key.mv_size, (jbyte *) mdb_key.mv_data);
+
+    int rc = mdb_get((MDB_txn *) mdb_txn, (MDB_dbi) mdb_dbi, &mdb_key, &mdb_value);
+    free(mdb_key.mv_data);
+    if (rc == MDB_NOTFOUND) {
+        return nullptr;
+    } else if (rc != MDB_SUCCESS) {
+        throwLmdbException(env, rc);
+    }
+
+    jbyteArray result = (*env).NewByteArray(mdb_value.mv_size);
+    (*env).SetByteArrayRegion(result, 0, mdb_value.mv_size, (jbyte *) mdb_value.mv_data);
+    return result;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_setData(JNIEnv *env, jobject thisObj, jlong mdb_txn, jlong mdb_dbi, jbyteArray key, jbyteArray value) {
+    MDB_val mdb_key, mdb_value;
+    mdb_key.mv_size = (*env).GetArrayLength(key);
+    mdb_key.mv_data = malloc(mdb_key.mv_size);
+    (*env).GetByteArrayRegion(key, 0, mdb_key.mv_size, (jbyte *) mdb_key.mv_data);
+    mdb_value.mv_size = (*env).GetArrayLength(value);
+    mdb_value.mv_data = malloc(mdb_value.mv_size);
+    (*env).GetByteArrayRegion(value, 0, mdb_value.mv_size, (jbyte *) mdb_value.mv_data);
+
+    int rc = mdb_put((MDB_txn *) mdb_txn, (MDB_dbi) mdb_dbi, &mdb_key, &mdb_value, 0);
+    free(mdb_key.mv_data);
+    free(mdb_value.mv_data);
+    if (rc != MDB_SUCCESS) {
+        throwLmdbException(env, rc);
+    }
 }

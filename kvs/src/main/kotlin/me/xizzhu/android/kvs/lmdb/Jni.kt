@@ -104,4 +104,8 @@ internal object Jni {
     external fun openDatabase(nativeTransaction: Long, createIfNotExists: Boolean): Long
 
     external fun closeDatabase(nativeEnv: Long, nativeDatabase: Long)
+
+    external fun getData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray): ByteArray?
+
+    external fun setData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray, value: ByteArray)
 }

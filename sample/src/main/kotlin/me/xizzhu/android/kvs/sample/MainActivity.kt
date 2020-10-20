@@ -18,7 +18,6 @@ package me.xizzhu.android.kvs.sample
 
 import android.app.Activity
 import android.os.Bundle
-import me.xizzhu.android.kvs.KvsConfig
 import me.xizzhu.android.kvs.newKvs
 import java.io.File
 import kotlin.concurrent.thread
@@ -29,10 +28,10 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         thread {
-            val kvs = newKvs {
+            newKvs {
                 dir = File(filesDir, "kvs").apply { mkdirs() }.absolutePath
+            }.use { kvs ->
             }
-            kvs.close()
         }
     }
 }

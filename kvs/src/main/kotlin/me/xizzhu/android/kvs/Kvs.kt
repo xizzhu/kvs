@@ -16,7 +16,9 @@
 
 package me.xizzhu.android.kvs
 
-interface Kvs : AutoCloseable {
+import java.io.Closeable
+
+interface Kvs : Closeable {
     /**
      * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
      */
