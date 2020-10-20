@@ -16,8 +16,14 @@
 
 package me.xizzhu.android.kvs.lmdb
 
-internal class Env : AutoCloseable {
+import me.xizzhu.android.kvs.KvsConfig
+
+internal class Env(config: KvsConfig) : AutoCloseable {
     private val nativeEnv = Jni.createEnv()
+
+    init {
+        Jni.openEnv(nativeEnv, config.dir, 0, 0x180 /* 0600 */)
+    }
 
     override fun close() {
         Jni.closeEnv(nativeEnv)

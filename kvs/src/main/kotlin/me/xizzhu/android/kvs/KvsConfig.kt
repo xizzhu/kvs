@@ -16,10 +16,25 @@
 
 package me.xizzhu.android.kvs
 
+import androidx.annotation.WorkerThread
 import me.xizzhu.android.kvs.lmdb.LmdbKvs
+import java.io.File
 
-class KvsBuilder {
-    fun build(): Kvs {
-        return LmdbKvs()
-    }
+data class KvsConfig(
+        var dir: String = ""
+)
+
+/**
+ * @throws [IllegalArgumentException]
+ */
+@WorkerThread
+fun newKvs(config: KvsConfig.() -> Unit): Kvs {
+    val kvsConfig = KvsConfig().apply { config(this) }
+
+    if (kvsConfig.dir.isEmpty()) throw IllegalArgumentException("Missing dir")
+    val dir = File(kvsConfig.dir)
+    if (!dir.exists()) throw IllegalArgumentException("Dir '${kvsConfig.dir}' not exist")
+    if (!dir.isDirectory) throw IllegalArgumentException("'${kvsConfig.dir}' is not a directory")
+
+    return LmdbKvs(kvsConfig)
 }

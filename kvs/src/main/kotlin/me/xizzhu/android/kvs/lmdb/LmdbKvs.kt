@@ -17,9 +17,10 @@
 package me.xizzhu.android.kvs.lmdb
 
 import me.xizzhu.android.kvs.Kvs
+import me.xizzhu.android.kvs.KvsConfig
 
-internal class LmdbKvs : Kvs {
-    private val env = Env()
+internal class LmdbKvs(config: KvsConfig) : Kvs {
+    private val env = Env(config)
 
     override fun get(key: ByteArray): ByteArray? {
         TODO("Not yet implemented")

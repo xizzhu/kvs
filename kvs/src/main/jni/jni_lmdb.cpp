@@ -68,3 +68,13 @@ extern "C" JNIEXPORT void JNICALL
 Java_me_xizzhu_android_kvs_lmdb_Jni_closeEnv(JNIEnv *env, jobject thisObj, jlong mdb_env) {
     mdb_env_close((MDB_env *) mdb_env);
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_openEnv(JNIEnv *env, jobject thisObj, jlong mdb_env, jstring path, jint flags, int mode) {
+    const char *pathPtr = (*env).GetStringUTFChars(path, nullptr);
+    int rc = mdb_env_open((MDB_env *) mdb_env, pathPtr, (unsigned int) flags, (mdb_mode_t) mode);
+    (*env).ReleaseStringUTFChars(path, pathPtr);
+    if (rc != MDB_SUCCESS) {
+        throwLmdbException(env, rc);
+    }
+}

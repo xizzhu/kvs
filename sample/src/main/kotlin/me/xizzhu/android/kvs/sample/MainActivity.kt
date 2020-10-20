@@ -18,15 +18,21 @@ package me.xizzhu.android.kvs.sample
 
 import android.app.Activity
 import android.os.Bundle
-import me.xizzhu.android.kvs.KvsBuilder
+import me.xizzhu.android.kvs.KvsConfig
+import me.xizzhu.android.kvs.newKvs
+import java.io.File
+import kotlin.concurrent.thread
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val kvs = KvsBuilder()
-                .build()
-        kvs.close()
+        thread {
+            val kvs = newKvs {
+                dir = File(filesDir, "kvs").apply { mkdirs() }.absolutePath
+            }
+            kvs.close()
+        }
     }
 }

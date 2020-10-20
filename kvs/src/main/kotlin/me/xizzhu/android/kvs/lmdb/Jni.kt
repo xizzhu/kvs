@@ -92,4 +92,6 @@ internal object Jni {
     external fun createEnv(): Long
 
     external fun closeEnv(nativeEnv: Long)
+
+    external fun openEnv(nativeEnv: Long, path: String, flags: Int, mode: Int)
 }
