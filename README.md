@@ -2,6 +2,7 @@ KVS - A Key-Value Store for Android
 ===================================
 
 [![Build Status](https://img.shields.io/travis/com/xizzhu/kvs)](https://travis-ci.com/xizzhu/kvs)
+[![Coverage Status](https://img.shields.io/coveralls/github/xizzhu/kvs.svg)](https://coveralls.io/github/xizzhu/kvs)
 [![API](https://img.shields.io/badge/API-21%2B-green.svg?style=flat)](https://developer.android.com/about/versions/android-5.0.html)
 [![Languages](https://img.shields.io/badge/languages-Kotlin-blue.svg?longCache=true&style=flat)](https://kotlinlang.org/)
 

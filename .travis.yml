@@ -1,4 +1,9 @@
 language: android
+dist: trusty
+
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=10
 
 android:
   components:
@@ -6,9 +11,13 @@ android:
     - platform-tools
     - build-tools-30.0.2
     - android-30
+    - sys-img-arm64-v8a-google_apis-25
 
 jdk:
   - oraclejdk8
+
+git:
+  submodules: false
 
 branches:
   only:
@@ -17,9 +26,21 @@ branches:
 before_install:
   - yes | sdkmanager "platforms;android-30"
   - yes | sdkmanager "build-tools;30.0.2"
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
+
+before_script:
+  - android list targets
+  - echo no | android create avd --force -n test -t android-25 --abi google_apis/arm64-v8a
+  - emulator -avd test -no-window &
+  - android-wait-for-emulator
+  - adb shell settings put global window_animation_scale 0 &
+  - adb shell settings put global transition_animation_scale 0 &
+  - adb shell settings put global animator_duration_scale 0 &
+  - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew clean testDebugUnitTest
+  - ./gradlew -Pcoverage -PdisablePreDex clean coveralls
 
 notifications:
   email: false
