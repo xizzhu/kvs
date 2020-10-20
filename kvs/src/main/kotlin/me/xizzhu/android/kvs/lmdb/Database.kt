@@ -16,16 +16,10 @@
 
 package me.xizzhu.android.kvs.lmdb
 
-internal class Transaction(private val nativeEnv: Long, private val readOnly: Boolean) {
-    private val nativeTransaction = Jni.beginTransaction(nativeEnv, readOnly)
+internal class Database(private val nativeEnv: Long, nativeTransaction: Long, createIfNotExists: Boolean) : AutoCloseable {
+    private val nativeDatabase = Jni.openDatabase(nativeTransaction, createIfNotExists)
 
-    fun commit() {
-        Jni.commitTransaction(nativeTransaction)
+    override fun close() {
+        Jni.closeDatabase(nativeEnv, nativeDatabase)
     }
-
-    fun abort() {
-        Jni.abortTransaction(nativeTransaction)
-    }
-
-    fun openDatabase(): Database = Database(nativeEnv, nativeTransaction, createIfNotExists = !readOnly)
 }

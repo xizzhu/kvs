@@ -101,3 +101,18 @@ extern "C" JNIEXPORT void JNICALL
 Java_me_xizzhu_android_kvs_lmdb_Jni_abortTransaction(JNIEnv *env, jobject thisObj, jlong mdb_txn) {
     mdb_txn_abort((MDB_txn *) mdb_txn);
 }
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_openDatabase(JNIEnv *env, jobject thisObj, jlong mdb_txn, jboolean createIfNotExists) {
+    MDB_dbi dbi;
+    int rc = mdb_dbi_open((MDB_txn *) mdb_txn, nullptr, createIfNotExists ? MDB_CREATE : 0, &dbi);
+    if (rc != MDB_SUCCESS) {
+        throwLmdbException(env, rc);
+    }
+    return (jlong) dbi;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_closeDatabase(JNIEnv *env, jobject thisObj, jlong mdb_env, jlong mdb_dbi) {
+    mdb_dbi_close((MDB_env *) mdb_env, (MDB_dbi) mdb_dbi);
+}

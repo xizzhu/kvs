@@ -100,4 +100,8 @@ internal object Jni {
     external fun commitTransaction(nativeTransaction: Long)
 
     external fun abortTransaction(nativeTransaction: Long)
+
+    external fun openDatabase(nativeTransaction: Long, createIfNotExists: Boolean): Long
+
+    external fun closeDatabase(nativeEnv: Long, nativeDatabase: Long)
 }

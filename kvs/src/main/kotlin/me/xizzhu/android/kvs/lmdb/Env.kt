@@ -29,6 +29,5 @@ internal class Env(config: KvsConfig) : AutoCloseable {
         Jni.closeEnv(nativeEnv)
     }
 
-    fun newTransaction(readOnly: Boolean): Transaction =
-            Transaction(Jni.beginTransaction(nativeEnv, readOnly))
+    fun newTransaction(readOnly: Boolean): Transaction = Transaction(nativeEnv, readOnly)
 }
