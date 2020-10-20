@@ -25,16 +25,16 @@ data class KvsConfig(
 )
 
 /**
- * @throws [IllegalArgumentException]
+ * @throws [KvsException]
  */
 @WorkerThread
 fun newKvs(config: KvsConfig.() -> Unit): Kvs {
     val kvsConfig = KvsConfig().apply { config(this) }
 
-    if (kvsConfig.dir.isEmpty()) throw IllegalArgumentException("Missing dir")
+    if (kvsConfig.dir.isEmpty()) throw KvsException("Missing dir")
     val dir = File(kvsConfig.dir)
-    if (!dir.exists()) throw IllegalArgumentException("Dir '${kvsConfig.dir}' not exist")
-    if (!dir.isDirectory) throw IllegalArgumentException("'${kvsConfig.dir}' is not a directory")
+    if (!dir.exists()) throw KvsException("Dir '${kvsConfig.dir}' not exist")
+    if (!dir.isDirectory) throw KvsException("'${kvsConfig.dir}' is not a directory")
 
     return LmdbKvs(kvsConfig)
 }

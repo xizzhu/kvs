@@ -21,11 +21,13 @@ import java.io.Closeable
 interface Kvs : Closeable {
     /**
      * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
+     * @throws [KvsException]
      */
     operator fun get(key: ByteArray): ByteArray?
 
     /**
      * Associates the specified [value] with the specified [key].
+     * @throws [KvsException]
      */
     operator fun set(key: ByteArray, value: ByteArray)
 }

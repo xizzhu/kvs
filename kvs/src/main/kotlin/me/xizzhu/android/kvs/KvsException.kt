@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package me.xizzhu.android.kvs.lmdb
+package me.xizzhu.android.kvs
 
 import java.io.IOException
 
-internal class LmdbException(val errorCode: Int, message: String) : IOException(message) {
+class KvsException(val errorCode: Int, message: String) : IOException(message) {
+    constructor(message: String) : this(Int.MIN_VALUE, message)
+
     override fun toString(): String {
-        return "LmdbException: Error code: $errorCode, message: $message"
+        return "KvsException -> error code: $errorCode, message: $message"
     }
 }

@@ -18,6 +18,7 @@ package me.xizzhu.android.kvs.lmdb
 
 import me.xizzhu.android.kvs.Kvs
 import me.xizzhu.android.kvs.KvsConfig
+import me.xizzhu.android.kvs.KvsException
 
 internal class LmdbKvs(config: KvsConfig) : Kvs {
     private val env = Env(config)

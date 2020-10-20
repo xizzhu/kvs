@@ -23,7 +23,7 @@ void throwLmdbException(JNIEnv *env, int errorCode) {
         return;
     }
 
-    jclass lmdbExceptionClass = env->FindClass("me/xizzhu/android/kvs/lmdb/LmdbException");
+    jclass lmdbExceptionClass = env->FindClass("me/xizzhu/android/kvs/KvsException");
     jmethodID ctorMethod = env->GetMethodID(lmdbExceptionClass, "<init>", "(ILjava/lang/String;)V");
     jobject lmdbException = env->NewObject(lmdbExceptionClass, ctorMethod, errorCode, env->NewStringUTF(mdb_strerror(errorCode)));
     env->Throw((jthrowable) lmdbException);
