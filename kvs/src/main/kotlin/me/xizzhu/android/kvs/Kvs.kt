@@ -26,8 +26,15 @@ interface Kvs : Closeable {
     operator fun get(key: ByteArray): ByteArray?
 
     /**
-     * Associates the specified [value] with the specified [key].
+     * Associates the specified [value] with the given [key].
      * @throws [KvsException]
      */
     operator fun set(key: ByteArray, value: ByteArray)
+
+    /**
+     * Removes the specified [key] and its corresponding value.
+     * @return `true` if the value was removed.
+     * @throws [KvsException]
+     */
+    fun remove(key: ByteArray): Boolean
 }

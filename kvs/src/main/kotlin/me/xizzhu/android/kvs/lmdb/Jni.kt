@@ -40,4 +40,6 @@ internal object Jni {
     external fun getData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray): ByteArray?
 
     external fun setData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray, value: ByteArray)
+
+    external fun removeData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray): Boolean
 }

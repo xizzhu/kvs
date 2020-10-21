@@ -30,4 +30,6 @@ internal class Database(private val nativeEnv: Long, private val nativeTransacti
     fun set(key: ByteArray, value: ByteArray) {
         Jni.setData(nativeTransaction, nativeDatabase, key, value)
     }
+
+    fun remove(key: ByteArray): Boolean = Jni.removeData(nativeTransaction, nativeDatabase, key)
 }

@@ -46,6 +46,16 @@ internal class LmdbKvs(config: KvsConfig) : Kvs {
         }
     }
 
+    override fun remove(key: ByteArray): Boolean {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
+
+        return env.newTransaction(readOnly = false).use { transaction ->
+            transaction.openDatabase().use { it.remove(key) }
+        }
+    }
+
     override fun close() {
         env.close()
     }
