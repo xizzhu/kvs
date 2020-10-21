@@ -17,28 +17,41 @@
 package me.xizzhu.android.kvs.lmdb
 
 import me.xizzhu.android.kvs.Kvs
-import me.xizzhu.android.kvs.KvsConfig
+import me.xizzhu.android.kvs.KvsException
 
-internal class LmdbKvs(config: KvsConfig) : Kvs {
-    private val env = Env(config)
+internal class LmdbKvsTransaction(private val database: Database) : Kvs {
+    override fun get(key: ByteArray): ByteArray? {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
 
-    override fun get(key: ByteArray): ByteArray? = withTransaction(readOnly = true) { it[key] }
-
-    override fun set(key: ByteArray, value: ByteArray) {
-        withTransaction(readOnly = false) { it[key] = value }
+        return database.get(key)
     }
 
-    override fun remove(key: ByteArray): Boolean = withTransaction(readOnly = false) { it.remove(key) }
+    override fun set(key: ByteArray, value: ByteArray) {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
+        if (value.isEmpty()) {
+            throw KvsException("Value is empty")
+        }
+
+        database.set(key, value)
+    }
+
+    override fun remove(key: ByteArray): Boolean {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
+
+        return database.remove(key)
+    }
 
     override fun <R> withTransaction(readOnly: Boolean, block: (Kvs) -> R): R {
-        env.newTransaction(readOnly).use(commit = !readOnly) { transaction ->
-            transaction.openDatabase().use { database ->
-                return block(LmdbKvsTransaction(database))
-            }
-        }
+        throw KvsException("Nested transactions are not supported yet.")
     }
 
     override fun close() {
-        env.close()
+        // Do nothing.
     }
 }

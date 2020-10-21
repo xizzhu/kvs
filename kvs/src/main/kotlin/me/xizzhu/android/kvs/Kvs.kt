@@ -38,6 +38,12 @@ interface Kvs : Closeable {
      * @throws [KvsException]
      */
     fun remove(key: ByteArray): Boolean
+
+    /**
+     * Runs the [block] in a transaction.
+     * @throws [KvsException]
+     */
+    fun <R> withTransaction(readOnly: Boolean = false, block: (Kvs) -> R): R
 }
 
 /**
