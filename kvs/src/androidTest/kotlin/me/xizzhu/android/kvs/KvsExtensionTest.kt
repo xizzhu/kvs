@@ -52,4 +52,22 @@ class KvsExtensionTest {
 
         assertFalse(kvs.remove("key"))
     }
+
+    @Test
+    fun testBooleanExtension() {
+        assertNull(kvs["key"])
+        assertFalse(kvs.getBoolean("key"))
+        assertTrue(kvs.getBoolean("key", true))
+
+        kvs["key"] = true
+        assertTrue(kvs.getBoolean("key"))
+
+        kvs["key"] = false
+        assertFalse(kvs.getBoolean("key", true))
+
+        assertTrue(kvs.remove("key"))
+        assertNull(kvs["key"])
+        assertFalse(kvs.getBoolean("key"))
+        assertTrue(kvs.getBoolean("key", true))
+    }
 }

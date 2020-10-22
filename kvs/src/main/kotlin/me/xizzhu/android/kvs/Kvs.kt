@@ -54,6 +54,21 @@ operator fun Kvs.set(key: String, value: ByteArray) {
 }
 
 /**
+ * Returns the boolean value corresponding to the given [key].
+ * @throws [KvsException]
+ */
+fun Kvs.getBoolean(key: String, defValue: Boolean = false): Boolean =
+        get(key)?.first()?.let { it != 0.toByte() } ?: defValue
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.set(key: String, value: Boolean) {
+    set(key.toByteArray(), byteArrayOf(if (value) 1 else 0))
+}
+
+/**
  * Removes the specified [key] and its corresponding value.
  * @return `true` if the value was removed.
  * @throws [KvsException]
