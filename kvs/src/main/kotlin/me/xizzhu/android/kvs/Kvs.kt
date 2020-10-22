@@ -17,6 +17,7 @@
 package me.xizzhu.android.kvs
 
 import java.io.Closeable
+import java.nio.ByteBuffer
 
 interface Kvs : Closeable {
     /**
@@ -66,6 +67,24 @@ fun Kvs.getBoolean(key: String, defValue: Boolean = false): Boolean =
  */
 operator fun Kvs.set(key: String, value: Boolean) {
     set(key.toByteArray(), byteArrayOf(if (value) 1 else 0))
+}
+
+/**
+ * Returns the double value corresponding to the given [key].
+ * @throws [KvsException]
+ */
+fun Kvs.getDouble(key: String, defValue: Double = 0.0): Double {
+    val bytes = get(key) ?: return defValue
+    if (bytes.size < 8) throw KvsException("Cannot convert value for '$key' to double")
+    return ByteBuffer.wrap(bytes).double
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.set(key: String, value: Double) {
+    set(key.toByteArray(), ByteBuffer.allocate(8).putDouble(value).array())
 }
 
 /**
