@@ -129,3 +129,21 @@ Java_me_xizzhu_android_kvs_lmdb_Jni_setData(JNIEnv *env, jobject thisObj, jlong 
         throwLmdbException(env, rc);
     }
 }
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_me_xizzhu_android_kvs_lmdb_Jni_removeData(JNIEnv *env, jobject thisObj, jlong mdb_txn, jlong mdb_dbi, jbyteArray key) {
+    MDB_val mdb_key;
+    mdb_key.mv_size = (*env).GetArrayLength(key);
+    mdb_key.mv_data = malloc(mdb_key.mv_size);
+    (*env).GetByteArrayRegion(key, 0, mdb_key.mv_size, (jbyte *) mdb_key.mv_data);
+
+    int rc = mdb_del((MDB_txn *) mdb_txn, (MDB_dbi) mdb_dbi, &mdb_key, nullptr);
+    free(mdb_key.mv_data);
+    if (rc == MDB_SUCCESS) {
+        return true;
+    } else if (rc == MDB_NOTFOUND) {
+        return false;
+    }
+    throwLmdbException(env, rc);
+    return false; // Should not reach here, just to make the compiler happy.
+}
