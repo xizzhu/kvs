@@ -142,6 +142,21 @@ operator fun Kvs.set(key: String, value: Long) {
 }
 
 /**
+ * Returns the string value corresponding to the given [key].
+ * @throws [KvsException]
+ */
+fun Kvs.getString(key: String, defValue: String = ""): String =
+        get(key)?.let { String(it) } ?: defValue
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.set(key: String, value: String) {
+    set(key.toByteArray(), value.toByteArray())
+}
+
+/**
  * Removes the specified [key] and its corresponding value.
  * @return `true` if the value was removed.
  * @throws [KvsException]

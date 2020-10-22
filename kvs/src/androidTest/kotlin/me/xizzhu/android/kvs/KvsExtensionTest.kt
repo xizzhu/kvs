@@ -166,4 +166,21 @@ class KvsExtensionTest {
         kvs["key"] = byteArrayOf(1, 2, 3, 4)
         kvs.getLong("key")
     }
+
+    @Test
+    fun testStringExtension() {
+        assertNull(kvs["key"])
+        assertTrue(kvs.getString("key").isEmpty())
+
+        kvs["key"] = "value"
+        assertEquals("value", kvs.getString("key"))
+        assertNull(kvs["non-exist"])
+
+        assertTrue(kvs.remove("key"))
+        assertNull(kvs["key"])
+        assertFalse(kvs.remove("non-exists"))
+        assertNull(kvs["non-exist"])
+
+        assertFalse(kvs.remove("key"))
+    }
 }
