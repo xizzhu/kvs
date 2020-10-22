@@ -118,4 +118,52 @@ class KvsExtensionTest {
         kvs["key"] = byteArrayOf(1, 2, 3)
         kvs.getFloat("key")
     }
+
+    @Test
+    fun testIntExtension() {
+        assertNull(kvs["key"])
+        assertEquals(0, kvs.getInt("key"))
+        assertEquals(8964, kvs.getInt("key", 8964))
+
+        kvs["key"] = 6489
+        assertEquals(6489, kvs.getInt("key"))
+
+        kvs["key"] = 64
+        assertEquals(64, kvs.getInt("key"))
+
+        assertTrue(kvs.remove("key"))
+        assertNull(kvs["key"])
+        assertEquals(0, kvs.getInt("key"))
+        assertEquals(89, kvs.getInt("key", 89))
+    }
+
+    @Test(expected = KvsException::class)
+    fun testIntExtension_withException() {
+        kvs["key"] = byteArrayOf(1, 2, 3)
+        kvs.getInt("key")
+    }
+
+    @Test
+    fun testLongExtension() {
+        assertNull(kvs["key"])
+        assertEquals(0L, kvs.getLong("key"))
+        assertEquals(8964L, kvs.getLong("key", 8964L))
+
+        kvs["key"] = 6489L
+        assertEquals(6489L, kvs.getLong("key"))
+
+        kvs["key"] = 64L
+        assertEquals(64L, kvs.getLong("key"))
+
+        assertTrue(kvs.remove("key"))
+        assertNull(kvs["key"])
+        assertEquals(0L, kvs.getLong("key"))
+        assertEquals(19890604L, kvs.getLong("key", 19890604L))
+    }
+
+    @Test(expected = KvsException::class)
+    fun testLongExtension_withException() {
+        kvs["key"] = byteArrayOf(1, 2, 3, 4)
+        kvs.getLong("key")
+    }
 }
