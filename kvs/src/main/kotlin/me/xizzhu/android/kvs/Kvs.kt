@@ -38,3 +38,24 @@ interface Kvs : Closeable {
      */
     fun remove(key: ByteArray): Boolean
 }
+
+/**
+ * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
+ * @throws [KvsException]
+ */
+operator fun Kvs.get(key: String): ByteArray? = get(key.toByteArray())
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.set(key: String, value: ByteArray) {
+    set(key.toByteArray(), value)
+}
+
+/**
+ * Removes the specified [key] and its corresponding value.
+ * @return `true` if the value was removed.
+ * @throws [KvsException]
+ */
+fun Kvs.remove(key: String): Boolean = remove(key.toByteArray())
