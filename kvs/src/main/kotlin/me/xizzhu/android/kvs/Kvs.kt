@@ -88,6 +88,24 @@ operator fun Kvs.set(key: String, value: Double) {
 }
 
 /**
+ * Returns the float value corresponding to the given [key].
+ * @throws [KvsException]
+ */
+fun Kvs.getFloat(key: String, defValue: Float = 0.0F): Float {
+    val bytes = get(key) ?: return defValue
+    if (bytes.size < 4) throw KvsException("Cannot convert value for '$key' to float")
+    return ByteBuffer.wrap(bytes).float
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.set(key: String, value: Float) {
+    set(key.toByteArray(), ByteBuffer.allocate(4).putFloat(value).array())
+}
+
+/**
  * Removes the specified [key] and its corresponding value.
  * @return `true` if the value was removed.
  * @throws [KvsException]

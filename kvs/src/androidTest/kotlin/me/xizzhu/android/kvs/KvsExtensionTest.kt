@@ -94,4 +94,28 @@ class KvsExtensionTest {
         kvs["key"] = byteArrayOf(1, 2, 3, 4)
         kvs.getDouble("key")
     }
+
+    @Test
+    fun testFloatExtension() {
+        assertNull(kvs["key"])
+        assertEquals(0, kvs.getFloat("key").compareTo(0.0F))
+        assertEquals(0, kvs.getFloat("key", 1989.64F).compareTo(1989.64F))
+
+        kvs["key"] = 64.1989F
+        assertEquals(0, kvs.getFloat("key").compareTo(64.1989F))
+
+        kvs["key"] = 89.64F
+        assertEquals(0, kvs.getFloat("key").compareTo(89.64F))
+
+        assertTrue(kvs.remove("key"))
+        assertNull(kvs["key"])
+        assertEquals(0, kvs.getFloat("key").compareTo(0.0F))
+        assertEquals(0, kvs.getFloat("key", 1989.64F).compareTo(1989.64F))
+    }
+
+    @Test(expected = KvsException::class)
+    fun testFloatExtension_withException() {
+        kvs["key"] = byteArrayOf(1, 2, 3)
+        kvs.getFloat("key")
+    }
 }
