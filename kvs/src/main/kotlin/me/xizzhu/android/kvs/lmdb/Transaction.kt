@@ -19,6 +19,8 @@ package me.xizzhu.android.kvs.lmdb
 internal class Transaction(private val nativeEnv: Long, private val readOnly: Boolean) {
     private val nativeTransaction = Jni.beginTransaction(nativeEnv, readOnly)
 
+    fun openDatabase(): Database = Database(nativeEnv, nativeTransaction, createIfNotExists = !readOnly)
+
     fun commit() {
         Jni.commitTransaction(nativeTransaction)
     }
@@ -26,8 +28,6 @@ internal class Transaction(private val nativeEnv: Long, private val readOnly: Bo
     fun abort() {
         Jni.abortTransaction(nativeTransaction)
     }
-
-    fun openDatabase(): Database = Database(nativeEnv, nativeTransaction, createIfNotExists = !readOnly)
 }
 
 internal inline fun <R> Transaction.use(commit: Boolean = true, block: (Transaction) -> R): R {
