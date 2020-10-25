@@ -22,6 +22,8 @@ import me.xizzhu.android.kvs.KvsConfig
 internal class LmdbKvs(config: KvsConfig) : Kvs {
     private val env = Env(config)
 
+    override fun contains(key: ByteArray): Boolean = withTransaction(readOnly = true) { it.contains(key) }
+
     override fun get(key: ByteArray): ByteArray? = withTransaction(readOnly = true) { it[key] }
 
     override fun set(key: ByteArray, value: ByteArray) {

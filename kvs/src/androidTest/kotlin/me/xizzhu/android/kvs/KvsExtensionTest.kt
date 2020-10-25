@@ -39,15 +39,20 @@ class KvsExtensionTest {
 
     @Test
     fun testBasicExtension() {
+        assertFalse(kvs.contains("key"))
         assertNull(kvs["key"])
 
         kvs["key"] = byteArrayOf(1, 2, 3, 4, 5)
+        assertTrue(kvs.contains("key"))
         assertTrue(byteArrayOf(1, 2, 3, 4, 5).contentEquals(kvs["key"]))
+        assertFalse(kvs.contains("non-exist"))
         assertNull(kvs["non-exist"])
 
         assertTrue(kvs.remove("key"))
+        assertFalse(kvs.contains("key"))
         assertNull(kvs["key"])
         assertFalse(kvs.remove("non-exists"))
+        assertFalse(kvs.contains("non-exist"))
         assertNull(kvs["non-exist"])
 
         assertFalse(kvs.remove("key"))

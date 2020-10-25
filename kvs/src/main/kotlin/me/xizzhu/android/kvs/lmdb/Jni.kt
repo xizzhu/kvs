@@ -37,6 +37,8 @@ internal object Jni {
 
     external fun closeDatabase(nativeEnv: Long, nativeDatabase: Long)
 
+    external fun containsKey(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray): Boolean
+
     external fun getData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray): ByteArray?
 
     external fun setData(nativeTransaction: Long, nativeDatabase: Long, key: ByteArray, value: ByteArray)
