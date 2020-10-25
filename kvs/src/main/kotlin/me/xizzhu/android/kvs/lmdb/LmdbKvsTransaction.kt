@@ -60,6 +60,6 @@ internal class LmdbKvsTransaction(private val database: Database) : Kvs {
     }
 
     override fun close() {
-        // Do nothing.
+        throw KvsException("Should not close a transaction directly.")
     }
 }
