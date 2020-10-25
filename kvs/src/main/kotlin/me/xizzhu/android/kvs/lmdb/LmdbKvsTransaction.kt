@@ -20,6 +20,14 @@ import me.xizzhu.android.kvs.Kvs
 import me.xizzhu.android.kvs.KvsException
 
 internal class LmdbKvsTransaction(private val database: Database) : Kvs {
+    override fun contains(key: ByteArray): Boolean {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
+
+        return database.contains(key)
+    }
+
     override fun get(key: ByteArray): ByteArray? {
         if (key.isEmpty()) {
             throw KvsException("Key is empty")

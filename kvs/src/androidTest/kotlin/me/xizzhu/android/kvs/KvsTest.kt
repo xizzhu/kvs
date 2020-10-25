@@ -38,6 +38,16 @@ class KvsTest {
     }
 
     @Test(expected = KvsException::class)
+    fun testContains_withEmptyKey() {
+        kvs.contains(byteArrayOf())
+    }
+
+    @Test
+    fun testContains_withNonExistingKey() {
+        assertFalse(kvs.contains(byteArrayOf(1)))
+    }
+
+    @Test(expected = KvsException::class)
     fun testGet_withEmptyKey() {
         kvs[byteArrayOf()]
     }
@@ -69,20 +79,25 @@ class KvsTest {
 
     @Test
     fun testSetThenGet() {
+        assertFalse(kvs.contains(byteArrayOf(1)))
         assertNull(kvs[byteArrayOf(1)])
 
         kvs[byteArrayOf(1)] = byteArrayOf(1, 2, 3, 4, 5)
+        assertTrue(kvs.contains(byteArrayOf(1)))
         assertTrue(byteArrayOf(1, 2, 3, 4, 5).contentEquals(kvs[byteArrayOf(1)]))
     }
 
     @Test
     fun testSetGetAndRemove() {
+        assertFalse(kvs.contains(byteArrayOf(1)))
         assertNull(kvs[byteArrayOf(1)])
 
         kvs[byteArrayOf(1)] = byteArrayOf(1, 2, 3, 4, 5)
+        assertTrue(kvs.contains(byteArrayOf(1)))
         assertTrue(byteArrayOf(1, 2, 3, 4, 5).contentEquals(kvs[byteArrayOf(1)]))
 
         assertTrue(kvs.remove(byteArrayOf(1)))
+        assertFalse(kvs.contains(byteArrayOf(1)))
         assertNull(kvs[byteArrayOf(1)])
 
         assertFalse(kvs.remove(byteArrayOf(1)))

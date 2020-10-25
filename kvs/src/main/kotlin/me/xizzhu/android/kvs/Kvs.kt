@@ -21,6 +21,11 @@ import java.nio.ByteBuffer
 
 interface Kvs : Closeable {
     /**
+     * Returns `true` if a value associated with the given [key] exists, or `false` otherwise.
+     */
+    operator fun contains(key: ByteArray): Boolean
+
+    /**
      * Returns the value corresponding to the given [key], or `null` if such a key does not exist.
      * @throws [KvsException]
      */

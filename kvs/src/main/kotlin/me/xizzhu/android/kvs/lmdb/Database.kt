@@ -25,6 +25,8 @@ internal class Database(private val nativeEnv: Long, private val nativeTransacti
         Jni.closeDatabase(nativeEnv, nativeDatabase)
     }
 
+    fun contains(key: ByteArray): Boolean = Jni.containsKey(nativeTransaction, nativeDatabase, key)
+
     fun get(key: ByteArray): ByteArray? = Jni.getData(nativeTransaction, nativeDatabase, key)
 
     fun set(key: ByteArray, value: ByteArray) {
