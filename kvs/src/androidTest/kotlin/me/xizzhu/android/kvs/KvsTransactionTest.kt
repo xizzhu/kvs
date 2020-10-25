@@ -102,6 +102,11 @@ class KvsTransactionTest {
     }
 
     @Test(expected = KvsException::class)
+    fun testNestedTransaction() {
+        kvs.withTransaction { it.withTransaction { } }
+    }
+
+    @Test(expected = KvsException::class)
     fun testClose() {
         kvs.withTransaction { it.close() }
     }
