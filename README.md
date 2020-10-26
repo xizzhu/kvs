@@ -6,6 +6,31 @@ KVS - A Key-Value Store for Android
 [![API](https://img.shields.io/badge/API-21%2B-green.svg?style=flat)](https://developer.android.com/about/versions/android-5.0.html)
 [![Languages](https://img.shields.io/badge/languages-Kotlin-blue.svg?longCache=true&style=flat)](https://kotlinlang.org/)
 
+KVS is a simple wrapper on top of the [Lightning Memory-Mapped Database (LMDB)](https://symas.com/lmdb/) key-value store.
+
+Usage
+-----
+
+```kotlin
+// Create a new Kvs instance:
+val kvs = newKvs {
+    dir = File(filesDir, "kvs").apply { mkdirs() }.absolutePath
+}
+
+// Put values into the store:
+kvs.edit {
+  it["key"] = "value"
+  it["answer to everything"] = 42
+}
+
+// Get values from the store:
+val str = kvs.getString("key")
+val int = kvs.getInt("answer to everything")
+
+// Close the store:
+kvs.close()
+```
+
 License
 -------
     Copyright (C) 2020 Xizhi Zhu
