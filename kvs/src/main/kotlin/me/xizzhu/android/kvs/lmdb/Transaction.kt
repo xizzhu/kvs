@@ -29,19 +29,3 @@ internal class Transaction(private val nativeEnv: Long, private val readOnly: Bo
         Jni.abortTransaction(nativeTransaction)
     }
 }
-
-internal inline fun <R> Transaction.use(commit: Boolean = true, block: (Transaction) -> R): R {
-    var exception: Throwable? = null
-    try {
-        return block(this)
-    } catch (e: Throwable) {
-        exception = e
-        throw e
-    } finally {
-        try {
-            if (commit && exception == null) commit() else abort()
-        } catch (e: Throwable) {
-            if (exception == null) throw e
-        }
-    }
-}

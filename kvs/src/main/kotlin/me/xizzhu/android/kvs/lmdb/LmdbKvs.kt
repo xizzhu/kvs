@@ -18,24 +18,44 @@ package me.xizzhu.android.kvs.lmdb
 
 import me.xizzhu.android.kvs.Kvs
 import me.xizzhu.android.kvs.KvsConfig
+import me.xizzhu.android.kvs.KvsException
 
 internal class LmdbKvs(config: KvsConfig) : Kvs {
     private val env = Env(config)
 
-    override fun contains(key: ByteArray): Boolean = withTransaction(readOnly = true) { it.contains(key) }
+    override fun contains(key: ByteArray): Boolean {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
 
-    override fun get(key: ByteArray): ByteArray? = withTransaction(readOnly = true) { it[key] }
-
-    override fun set(key: ByteArray, value: ByteArray) {
-        withTransaction(readOnly = false) { it[key] = value }
+        return withReadOnlyTransaction { it.contains(key) }
     }
 
-    override fun remove(key: ByteArray): Boolean = withTransaction(readOnly = false) { it.remove(key) }
+    override fun get(key: ByteArray): ByteArray? {
+        if (key.isEmpty()) {
+            throw KvsException("Key is empty")
+        }
 
-    override fun <R> withTransaction(readOnly: Boolean, block: (Kvs) -> R): R {
-        env.newTransaction(readOnly).use(commit = !readOnly) { transaction ->
+        return withReadOnlyTransaction { it.get(key) }
+    }
+
+    override fun edit(): Kvs.Editor = LmdbKvsEditor(env)
+
+    private inline fun <R> withReadOnlyTransaction(block: (Database) -> R): R {
+        val transaction = env.newTransaction(readOnly = true)
+        var exception: Throwable? = null
+        try {
             transaction.openDatabase().use { database ->
-                return block(LmdbKvsTransaction(database))
+                return block(database)
+            }
+        } catch (e: Throwable) {
+            exception = e
+            throw e
+        } finally {
+            try {
+                transaction.abort()
+            } catch (e: Throwable) {
+                if (exception == null) throw e
             }
         }
     }

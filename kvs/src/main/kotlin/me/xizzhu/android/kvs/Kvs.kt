@@ -32,23 +32,37 @@ interface Kvs : Closeable {
     operator fun get(key: ByteArray): ByteArray?
 
     /**
-     * Associates the specified [value] with the given [key].
-     * @throws [KvsException]
+     * Creates a new [Editor] to mutate the store.
+     * @return a new [Editor] instance.
      */
-    operator fun set(key: ByteArray, value: ByteArray)
+    fun edit(): Editor
 
-    /**
-     * Removes the specified [key] and its corresponding value.
-     * @return `true` if the value was removed.
-     * @throws [KvsException]
-     */
-    fun remove(key: ByteArray): Boolean
+    interface Editor {
+        /**
+         * Associates the specified [value] with the given [key].
+         * @throws [KvsException]
+         */
+        operator fun set(key: ByteArray, value: ByteArray)
 
-    /**
-     * Runs the [block] in a transaction.
-     * @throws [KvsException]
-     */
-    fun <R> withTransaction(readOnly: Boolean = false, block: (Kvs) -> R): R
+        /**
+         * Removes the specified [key] and its corresponding value.
+         * @return `true` if the value was removed.
+         * @throws [KvsException]
+         */
+        fun remove(key: ByteArray): Boolean
+
+        /**
+         * Commits the changes.
+         * @throws [KvsException]
+         */
+        fun commit()
+
+        /**
+         * Discards the changes.
+         * @throws [KvsException]
+         */
+        fun abort()
+    }
 }
 
 /**
@@ -63,27 +77,11 @@ operator fun Kvs.contains(key: String): Boolean = contains(key.toByteArray())
 operator fun Kvs.get(key: String): ByteArray? = get(key.toByteArray())
 
 /**
- * Associates the specified [value] with the given [key].
- * @throws [KvsException]
- */
-operator fun Kvs.set(key: String, value: ByteArray) {
-    set(key.toByteArray(), value)
-}
-
-/**
  * Returns the boolean value corresponding to the given [key].
  * @throws [KvsException]
  */
 fun Kvs.getBoolean(key: String, defValue: Boolean = false): Boolean =
         get(key)?.first()?.let { it != 0.toByte() } ?: defValue
-
-/**
- * Associates the specified [value] with the given [key].
- * @throws [KvsException]
- */
-operator fun Kvs.set(key: String, value: Boolean) {
-    set(key.toByteArray(), byteArrayOf(if (value) 1 else 0))
-}
 
 /**
  * Returns the double value corresponding to the given [key].
@@ -93,14 +91,6 @@ fun Kvs.getDouble(key: String, defValue: Double = 0.0): Double {
     val bytes = get(key) ?: return defValue
     if (bytes.size < 8) throw KvsException("Cannot convert value for '$key' to double")
     return ByteBuffer.wrap(bytes).double
-}
-
-/**
- * Associates the specified [value] with the given [key].
- * @throws [KvsException]
- */
-operator fun Kvs.set(key: String, value: Double) {
-    set(key.toByteArray(), ByteBuffer.allocate(8).putDouble(value).array())
 }
 
 /**
@@ -114,14 +104,6 @@ fun Kvs.getFloat(key: String, defValue: Float = 0.0F): Float {
 }
 
 /**
- * Associates the specified [value] with the given [key].
- * @throws [KvsException]
- */
-operator fun Kvs.set(key: String, value: Float) {
-    set(key.toByteArray(), ByteBuffer.allocate(4).putFloat(value).array())
-}
-
-/**
  * Returns the int value corresponding to the given [key].
  * @throws [KvsException]
  */
@@ -129,14 +111,6 @@ fun Kvs.getInt(key: String, defValue: Int = 0): Int {
     val bytes = get(key) ?: return defValue
     if (bytes.size < 4) throw KvsException("Cannot convert value for '$key' to int")
     return ByteBuffer.wrap(bytes).int
-}
-
-/**
- * Associates the specified [value] with the given [key].
- * @throws [KvsException]
- */
-operator fun Kvs.set(key: String, value: Int) {
-    set(key.toByteArray(), ByteBuffer.allocate(4).putInt(value).array())
 }
 
 /**
@@ -150,14 +124,6 @@ fun Kvs.getLong(key: String, defValue: Long = 0L): Long {
 }
 
 /**
- * Associates the specified [value] with the given [key].
- * @throws [KvsException]
- */
-operator fun Kvs.set(key: String, value: Long) {
-    set(key.toByteArray(), ByteBuffer.allocate(8).putLong(value).array())
-}
-
-/**
  * Returns the string value corresponding to the given [key].
  * @throws [KvsException]
  */
@@ -165,10 +131,79 @@ fun Kvs.getString(key: String, defValue: String = ""): String =
         get(key)?.let { String(it) } ?: defValue
 
 /**
+ * Allows mutating the store.
+ * @throws [KvsException]
+ */
+inline fun <R> Kvs.edit(block: (Kvs.Editor) -> R): R {
+    var exception: Throwable? = null
+    val editor = edit()
+    try {
+        return block(editor)
+    } catch (e: Throwable) {
+        exception = e
+        throw e
+    } finally {
+        try {
+            if (exception == null) editor.commit() else editor.abort()
+        } catch (e: Throwable) {
+            if (exception == null) throw e
+        }
+    }
+}
+
+/**
  * Associates the specified [value] with the given [key].
  * @throws [KvsException]
  */
-operator fun Kvs.set(key: String, value: String) {
+operator fun Kvs.Editor.set(key: String, value: ByteArray) {
+    set(key.toByteArray(), value)
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.Editor.set(key: String, value: Boolean) {
+    set(key.toByteArray(), byteArrayOf(if (value) 1 else 0))
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.Editor.set(key: String, value: Double) {
+    set(key.toByteArray(), ByteBuffer.allocate(8).putDouble(value).array())
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.Editor.set(key: String, value: Float) {
+    set(key.toByteArray(), ByteBuffer.allocate(4).putFloat(value).array())
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.Editor.set(key: String, value: Int) {
+    set(key.toByteArray(), ByteBuffer.allocate(4).putInt(value).array())
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.Editor.set(key: String, value: Long) {
+    set(key.toByteArray(), ByteBuffer.allocate(8).putLong(value).array())
+}
+
+/**
+ * Associates the specified [value] with the given [key].
+ * @throws [KvsException]
+ */
+operator fun Kvs.Editor.set(key: String, value: String) {
     set(key.toByteArray(), value.toByteArray())
 }
 
@@ -177,4 +212,4 @@ operator fun Kvs.set(key: String, value: String) {
  * @return `true` if the value was removed.
  * @throws [KvsException]
  */
-fun Kvs.remove(key: String): Boolean = remove(key.toByteArray())
+fun Kvs.Editor.remove(key: String): Boolean = remove(key.toByteArray())

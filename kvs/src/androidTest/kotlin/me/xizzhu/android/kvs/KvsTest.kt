@@ -59,22 +59,25 @@ class KvsTest {
 
     @Test(expected = KvsException::class)
     fun testSet_withEmptyKey() {
-        kvs[byteArrayOf()] = byteArrayOf(1)
+        kvs.edit()[byteArrayOf()] = byteArrayOf(1)
     }
 
     @Test(expected = KvsException::class)
     fun testSet_withEmptyValue() {
-        kvs[byteArrayOf(1)] = byteArrayOf()
+        kvs.edit()[byteArrayOf(1)] = byteArrayOf()
     }
 
     @Test(expected = KvsException::class)
     fun testRemove_withEmptyKey() {
-        kvs.remove(byteArrayOf())
+        kvs.edit().remove(byteArrayOf())
     }
 
     @Test
     fun testRemove_withNonExistingKey() {
-        assertFalse(kvs.remove(byteArrayOf(1)))
+        with(kvs.edit()) {
+            assertFalse(remove(byteArrayOf(1)))
+            abort()
+        }
     }
 
     @Test
@@ -82,7 +85,10 @@ class KvsTest {
         assertFalse(kvs.contains(byteArrayOf(1)))
         assertNull(kvs[byteArrayOf(1)])
 
-        kvs[byteArrayOf(1)] = byteArrayOf(1, 2, 3, 4, 5)
+        with(kvs.edit()) {
+            this[byteArrayOf(1)] = byteArrayOf(1, 2, 3, 4, 5)
+            commit()
+        }
         assertTrue(kvs.contains(byteArrayOf(1)))
         assertTrue(byteArrayOf(1, 2, 3, 4, 5).contentEquals(kvs[byteArrayOf(1)]))
     }
@@ -92,14 +98,23 @@ class KvsTest {
         assertFalse(kvs.contains(byteArrayOf(1)))
         assertNull(kvs[byteArrayOf(1)])
 
-        kvs[byteArrayOf(1)] = byteArrayOf(1, 2, 3, 4, 5)
+        with(kvs.edit()) {
+            this[byteArrayOf(1)] = byteArrayOf(1, 2, 3, 4, 5)
+            commit()
+        }
         assertTrue(kvs.contains(byteArrayOf(1)))
         assertTrue(byteArrayOf(1, 2, 3, 4, 5).contentEquals(kvs[byteArrayOf(1)]))
 
-        assertTrue(kvs.remove(byteArrayOf(1)))
+        with(kvs.edit()) {
+            assertTrue(remove(byteArrayOf(1)))
+            commit()
+        }
         assertFalse(kvs.contains(byteArrayOf(1)))
         assertNull(kvs[byteArrayOf(1)])
 
-        assertFalse(kvs.remove(byteArrayOf(1)))
+        with(kvs.edit()) {
+            assertFalse(remove(byteArrayOf(1)))
+            abort()
+        }
     }
 }

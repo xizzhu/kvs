@@ -42,20 +42,27 @@ class KvsExtensionTest {
         assertFalse(kvs.contains("key"))
         assertNull(kvs["key"])
 
-        kvs["key"] = byteArrayOf(1, 2, 3, 4, 5)
+        kvs.edit { it["key"] = byteArrayOf(1, 2, 3, 4, 5) }
         assertTrue(kvs.contains("key"))
         assertTrue(byteArrayOf(1, 2, 3, 4, 5).contentEquals(kvs["key"]))
         assertFalse(kvs.contains("non-exist"))
         assertNull(kvs["non-exist"])
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertFalse(kvs.contains("key"))
         assertNull(kvs["key"])
-        assertFalse(kvs.remove("non-exists"))
+        kvs.edit { assertFalse(it.remove("non-exists")) }
         assertFalse(kvs.contains("non-exist"))
         assertNull(kvs["non-exist"])
 
-        assertFalse(kvs.remove("key"))
+        kvs.edit { assertFalse(it.remove("key")) }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testEditExtension_withException() {
+        kvs.edit {
+            throw IllegalStateException("What happened?")
+        }
     }
 
     @Test
@@ -64,13 +71,13 @@ class KvsExtensionTest {
         assertFalse(kvs.getBoolean("key"))
         assertTrue(kvs.getBoolean("key", true))
 
-        kvs["key"] = true
+        kvs.edit { it["key"] = true }
         assertTrue(kvs.getBoolean("key"))
 
-        kvs["key"] = false
+        kvs.edit { it["key"] = false }
         assertFalse(kvs.getBoolean("key", true))
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertNull(kvs["key"])
         assertFalse(kvs.getBoolean("key"))
         assertTrue(kvs.getBoolean("key", true))
@@ -82,13 +89,13 @@ class KvsExtensionTest {
         assertEquals(0, kvs.getDouble("key").compareTo(0.0))
         assertEquals(0, kvs.getDouble("key", 1989.64).compareTo(1989.64))
 
-        kvs["key"] = 64.1989
+        kvs.edit { it["key"] = 64.1989 }
         assertEquals(0, kvs.getDouble("key").compareTo(64.1989))
 
-        kvs["key"] = 89.64
+        kvs.edit { it["key"] = 89.64 }
         assertEquals(0, kvs.getDouble("key").compareTo(89.64))
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertNull(kvs["key"])
         assertEquals(0, kvs.getDouble("key").compareTo(0.0))
         assertEquals(0, kvs.getDouble("key", 1989.64).compareTo(1989.64))
@@ -96,7 +103,7 @@ class KvsExtensionTest {
 
     @Test(expected = KvsException::class)
     fun testDoubleExtension_withException() {
-        kvs["key"] = byteArrayOf(1, 2, 3, 4)
+        kvs.edit { it["key"] = byteArrayOf(1, 2, 3, 4, 5, 6, 7) }
         kvs.getDouble("key")
     }
 
@@ -106,13 +113,13 @@ class KvsExtensionTest {
         assertEquals(0, kvs.getFloat("key").compareTo(0.0F))
         assertEquals(0, kvs.getFloat("key", 1989.64F).compareTo(1989.64F))
 
-        kvs["key"] = 64.1989F
+        kvs.edit { it["key"] = 64.1989F }
         assertEquals(0, kvs.getFloat("key").compareTo(64.1989F))
 
-        kvs["key"] = 89.64F
+        kvs.edit { it["key"] = 89.64F }
         assertEquals(0, kvs.getFloat("key").compareTo(89.64F))
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertNull(kvs["key"])
         assertEquals(0, kvs.getFloat("key").compareTo(0.0F))
         assertEquals(0, kvs.getFloat("key", 1989.64F).compareTo(1989.64F))
@@ -120,7 +127,7 @@ class KvsExtensionTest {
 
     @Test(expected = KvsException::class)
     fun testFloatExtension_withException() {
-        kvs["key"] = byteArrayOf(1, 2, 3)
+        kvs.edit { it["key"] = byteArrayOf(1, 2, 3) }
         kvs.getFloat("key")
     }
 
@@ -130,13 +137,13 @@ class KvsExtensionTest {
         assertEquals(0, kvs.getInt("key"))
         assertEquals(8964, kvs.getInt("key", 8964))
 
-        kvs["key"] = 6489
+        kvs.edit { it["key"] = 6489 }
         assertEquals(6489, kvs.getInt("key"))
 
-        kvs["key"] = 64
+        kvs.edit { it["key"] = 64 }
         assertEquals(64, kvs.getInt("key"))
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertNull(kvs["key"])
         assertEquals(0, kvs.getInt("key"))
         assertEquals(89, kvs.getInt("key", 89))
@@ -144,7 +151,7 @@ class KvsExtensionTest {
 
     @Test(expected = KvsException::class)
     fun testIntExtension_withException() {
-        kvs["key"] = byteArrayOf(1, 2, 3)
+        kvs.edit { it["key"] = byteArrayOf(1, 2, 3) }
         kvs.getInt("key")
     }
 
@@ -154,13 +161,13 @@ class KvsExtensionTest {
         assertEquals(0L, kvs.getLong("key"))
         assertEquals(8964L, kvs.getLong("key", 8964L))
 
-        kvs["key"] = 6489L
+        kvs.edit { it["key"] = 6489L }
         assertEquals(6489L, kvs.getLong("key"))
 
-        kvs["key"] = 64L
+        kvs.edit { it["key"] = 64L }
         assertEquals(64L, kvs.getLong("key"))
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertNull(kvs["key"])
         assertEquals(0L, kvs.getLong("key"))
         assertEquals(19890604L, kvs.getLong("key", 19890604L))
@@ -168,7 +175,7 @@ class KvsExtensionTest {
 
     @Test(expected = KvsException::class)
     fun testLongExtension_withException() {
-        kvs["key"] = byteArrayOf(1, 2, 3, 4)
+        kvs.edit { it["key"] = byteArrayOf(1, 2, 3, 4, 5, 6, 7) }
         kvs.getLong("key")
     }
 
@@ -177,15 +184,15 @@ class KvsExtensionTest {
         assertNull(kvs["key"])
         assertTrue(kvs.getString("key").isEmpty())
 
-        kvs["key"] = "value"
+        kvs.edit { it["key"] = "value" }
         assertEquals("value", kvs.getString("key"))
         assertNull(kvs["non-exist"])
 
-        assertTrue(kvs.remove("key"))
+        kvs.edit { assertTrue(it.remove("key")) }
         assertNull(kvs["key"])
-        assertFalse(kvs.remove("non-exists"))
+        kvs.edit { assertFalse(it.remove("non-exists")) }
         assertNull(kvs["non-exist"])
 
-        assertFalse(kvs.remove("key"))
+        kvs.edit { assertFalse(it.remove("key")) }
     }
 }
